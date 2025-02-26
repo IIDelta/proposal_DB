@@ -12,6 +12,20 @@ class SOWListView(ListView):
     context_object_name = 'proposals'
     queryset = Proposal.objects.all().prefetch_related('sows')
 
+    def get_queryset(self):
+        queryset = Proposal.objects.all().prefetch_related('sows')
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(proposal_id__icontains=q)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Provide all proposal IDs for the autocomplete datalist.
+        context['all_proposals'] = Proposal.objects.values_list('proposal_id', flat=True)
+        return context
+
+
 # Proposal CRUD Views
 class ProposalCreateView(LoginRequiredMixin, CreateView):
     model = Proposal
@@ -54,9 +68,11 @@ class SOWCreateView(LoginRequiredMixin, CreateView):
     template_name = 'proposals/sow_form.html'
     success_url = reverse_lazy('proposal_sow_list')
 
-    def form_valid(self, form):
-        messages.success(self.request, "SOW created successfully.")
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all_proposals'] = Proposal.objects.all()
+        return context
+
 
 class SOWUpdateView(LoginRequiredMixin, UpdateView):
     model = SOW

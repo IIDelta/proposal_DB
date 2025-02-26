@@ -3,6 +3,7 @@
 {% block content %}
 <h1>{% if object %}Edit SOW: {{ object.sow_id }}{% else %}Create SOW{% endif %}</h1>
 
+
 {# Display form-wide (non-field) errors #}
 {% if form.non_field_errors %}
   <div class="alert alert-danger">
@@ -351,24 +352,29 @@
   <a href="{% url 'sow_list' %}" class="btn btn-secondary">Cancel</a>
 </form>
 
+<datalist id="proposalList">
+    {% for proposal in all_proposals %}
+      <option value="{{ proposal.proposal_id }}">
+    {% endfor %}
+  </datalist>
+  
+
 <!-- JavaScript: Auto-populate sow_id based on the selected Proposal -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const proposalSelect = document.getElementById("id_proposal");
-  const sowIdInput = document.getElementById("id_sow_id");
-
-  // Only auto-set if there's no existing value (i.e., on create or if sow_id is empty)
-  if (!sowIdInput.value) {
-    let selectedProposalText = proposalSelect.options[proposalSelect.selectedIndex].text;
-    sowIdInput.value = selectedProposalText + "-S";
-  }
-
-  proposalSelect.addEventListener("change", function() {
-    if (!sowIdInput.value || sowIdInput.value.endsWith("-S")) {
-      let selectedProposalText = proposalSelect.options[proposalSelect.selectedIndex].text;
-      sowIdInput.value = selectedProposalText + "-S";
-    }
-  });
-});
-</script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const proposalInput = document.getElementById("id_proposal");
+        const sowIdInput = document.getElementById("id_sow_id");
+    
+        function updateSowId() {
+            const proposalValue = proposalInput.value.trim();
+            if (proposalValue && (!sowIdInput.value || sowIdInput.value.match(/^.+-S$/))) {
+                sowIdInput.value = proposalValue + "-S";
+            }
+        }
+    
+        updateSowId();
+        proposalInput.addEventListener("input", updateSowId);
+    });
+    </script>
+    
 {% endblock %}
