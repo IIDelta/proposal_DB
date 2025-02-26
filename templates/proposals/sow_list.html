@@ -1,6 +1,5 @@
-<!-- templates/proposals/sow_list.html -->
 {% extends 'proposals/base.html' %}
-{% block title %}SOW List{% endblock %}
+{% block title %}SOW Records{% endblock %}
 {% block content %}
 <h1>SOW Records</h1>
 
@@ -12,48 +11,67 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>Proposal ID</th>
-      <th>SOW ID</th>
+      <th>Proposal / SOW</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for sow in sows %}
-      <tr>
-        <td>{{ sow.proposal.proposal_id }}</td>
-        <td>
-          <a href="{% url 'sow_detail' sow.pk %}">{{ sow.sow_id }}</a>
-        </td>
-        <td>
-          <a href="{% url 'sow_update' sow.pk %}" class="btn btn-sm btn-warning">Edit SOW</a>
-          <a href="{% url 'sow_delete' sow.pk %}" class="btn btn-sm btn-danger">Delete SOW</a>
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="3">No SOWs found.</td>
-      </tr>
+    {% for proposal in proposals %}
+      {% with proposal.sows.all as sows %}
+      {% if sows %}
+        {# Proposal with one or more SOWs: merge proposal cell over multiple rows #}
+        <tr>
+          <td rowspan="{{ sows|length }}">
+            <strong>{{ proposal.proposal_id }}</strong><br/>
+            <a href="{% url 'proposal_update' proposal.pk %}" title="Edit Proposal">
+              &#9881;
+            </a>
+            <a href="{% url 'proposal_delete' proposal.pk %}" title="Delete Proposal">
+              &#128465;
+            </a>
+          </td>
+          <td>
+            <a href="{% url 'sow_detail' sows.0.pk %}">{{ sows.0.sow_id }}</a>
+            <a href="{% url 'sow_update' sows.0.pk %}" title="Edit SOW">
+              &#9881;
+            </a>
+            <a href="{% url 'sow_delete' sows.0.pk %}" title="Delete SOW">
+              &#128465;
+            </a>
+          </td>
+        </tr>
+        {% for sow in sows|slice:"1:" %}
+        <tr>
+          <td>
+            <a href="{% url 'sow_detail' sow.pk %}">{{ sow.sow_id }}</a>
+            <a href="{% url 'sow_update' sow.pk %}" title="Edit SOW">
+              &#9881;
+            </a>
+            <a href="{% url 'sow_delete' sow.pk %}" title="Delete SOW">
+              &#128465;
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        {# Proposal without any SOWs #}
+        <tr>
+          <td>
+            <strong>{{ proposal.proposal_id }}</strong><br/>
+            <a href="{% url 'proposal_update' proposal.pk %}" title="Edit Proposal">
+              &#9881;
+            </a>
+            <a href="{% url 'proposal_delete' proposal.pk %}" title="Delete Proposal">
+              &#128465;
+            </a>
+          </td>
+          <td>
+            <em>No SOWs</em>
+          </td>
+        </tr>
+      {% endif %}
+      {% endwith %}
     {% endfor %}
   </tbody>
 </table>
-
-{% if is_paginated %}
-<nav>
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      </li>
-    {% endif %}
-    <li class="page-item active">
-      <a class="page-link" href="#">{{ page_obj.number }}</a>
-    </li>
-    {% if page_obj.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-      </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
 {% endblock %}

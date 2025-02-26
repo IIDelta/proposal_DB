@@ -2,49 +2,349 @@
 {% block title %}SOW Form{% endblock %}
 {% block content %}
 <h1>{% if object %}Edit SOW: {{ object.sow_id }}{% else %}Create SOW{% endif %}</h1>
+
+{# Display form-wide (non-field) errors #}
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
 <form method="post">
   {% csrf_token %}
 
-  <!-- Link Fields (Proposal & SOW ID) -->
+  <!-- Identifiers -->
   <h3>Identifiers</h3>
   <table class="table table-bordered">
     <tr>
       <th>Proposal</th>
-      <td>{{ form.proposal }}</td>
+      <td>
+        {{ form.proposal }}
+        {% if form.proposal.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.proposal.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
     </tr>
     <tr>
       <th>SOW ID</th>
-      <td>{{ form.sow_id }}</td>
+      <td>
+        {{ form.sow_id }}
+        {% if form.sow_id.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.sow_id.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
     </tr>
   </table>
 
   <!-- BD Data -->
   <h3>BD Data</h3>
   <table class="table table-bordered">
-    <tr><th>Date Questionnaire Issued</th><td>{{ form.date_questionnaire_issued }}</td></tr>
-    <tr><th>Bid Defense Required</th><td>{{ form.bid_defense_required }}</td></tr>
-    <tr><th>Bid Defense Results</th><td>{{ form.bid_defense_results }}</td></tr>
-    <tr><th>MW Assigned to Synopsis</th><td>{{ form.mw_assigned_to_synopsis }}</td></tr>
-    <tr><th>Study Design Version</th><td>{{ form.study_design_version }}</td></tr>
-    <tr><th>Study Design Approval Date</th><td>{{ form.study_design_approval_date }}</td></tr>
-    <tr><th>Pricing Version</th><td>{{ form.pricing_version }}</td></tr>
-    <tr><th>Pricing Approval Date</th><td>{{ form.pricing_approval_date }}</td></tr>
-    <tr><th>Final Proposal Version</th><td>{{ form.final_proposal_version }}</td></tr>
-    <tr><th>Final Proposal Approval Date</th><td>{{ form.final_proposal_approval_date }}</td></tr>
+    <tr>
+      <th>Date Questionnaire Issued</th>
+      <td>
+        {{ form.date_questionnaire_issued }}
+        {% if form.date_questionnaire_issued.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.date_questionnaire_issued.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Bid Defense Required</th>
+      <td>
+        {{ form.bid_defense_required }}
+        {% if form.bid_defense_required.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.bid_defense_required.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Bid Defense Results</th>
+      <td>
+        {{ form.bid_defense_results }}
+        {% if form.bid_defense_results.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.bid_defense_results.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>MW Assigned to Synopsis</th>
+      <td>
+        {{ form.mw_assigned_to_synopsis }}
+        {% if form.mw_assigned_to_synopsis.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.mw_assigned_to_synopsis.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Study Design Version</th>
+      <td>
+        {{ form.study_design_version }}
+        {% if form.study_design_version.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.study_design_version.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Study Design Approval Date</th>
+      <td>
+        {{ form.study_design_approval_date }}
+        {% if form.study_design_approval_date.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.study_design_approval_date.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Pricing Version</th>
+      <td>
+        {{ form.pricing_version }}
+        {% if form.pricing_version.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.pricing_version.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Pricing Approval Date</th>
+      <td>
+        {{ form.pricing_approval_date }}
+        {% if form.pricing_approval_date.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.pricing_approval_date.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Final Proposal Version</th>
+      <td>
+        {{ form.final_proposal_version }}
+        {% if form.final_proposal_version.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.final_proposal_version.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Final Proposal Approval Date</th>
+      <td>
+        {{ form.final_proposal_approval_date }}
+        {% if form.final_proposal_approval_date.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.final_proposal_approval_date.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
   </table>
 
   <!-- Preparation Checklist -->
   <h3>Preparation Checklist</h3>
   <table class="table table-bordered">
-    <tr><th>Budget Lower Limit</th><td>{{ form.budget_lower_limit }}</td></tr>
-    <tr><th>Budget Upper Limit</th><td>{{ form.budget_upper_limit }}</td></tr>
-    <tr><th>Proposal Due Date</th><td>{{ form.proposal_due_date }}</td></tr>
-    <tr><th>Primary Objective</th><td>{{ form.primary_objective }}</td></tr>
-    <tr><th>Vendors Identified</th><td>{{ form.vendors_identified }}</td></tr>
-    <tr><th>Sample Size</th><td>{{ form.sample_size }}</td></tr>
-    <tr><th>Sample Size Justification</th><td>{{ form.sample_size_justification }}</td></tr>
-    <tr><th>Recruitment Duration Value</th><td>{{ form.recruitment_duration_value }}</td></tr>
-    <tr><th>Recruitment Duration Unit</th><td>{{ form.recruitment_duration_unit }}</td></tr>
+    <tr>
+      <th>Budget Lower Limit</th>
+      <td>
+        {{ form.budget_lower_limit }}
+        {% if form.budget_lower_limit.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.budget_lower_limit.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Budget Upper Limit</th>
+      <td>
+        {{ form.budget_upper_limit }}
+        {% if form.budget_upper_limit.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.budget_upper_limit.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Proposal Due Date</th>
+      <td>
+        {{ form.proposal_due_date }}
+        {% if form.proposal_due_date.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.proposal_due_date.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Primary Objective</th>
+      <td>
+        {{ form.primary_objective }}
+        {% if form.primary_objective.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.primary_objective.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Vendors Identified</th>
+      <td>
+        {{ form.vendors_identified }}
+        {% if form.vendors_identified.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.vendors_identified.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Sample Size</th>
+      <td>
+        {{ form.sample_size }}
+        {% if form.sample_size.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.sample_size.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Sample Size Justification</th>
+      <td>
+        {{ form.sample_size_justification }}
+        {% if form.sample_size_justification.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.sample_size_justification.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Recruitment Duration Value</th>
+      <td>
+        {{ form.recruitment_duration_value }}
+        {% if form.recruitment_duration_value.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.recruitment_duration_value.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Recruitment Duration Unit</th>
+      <td>
+        {{ form.recruitment_duration_unit }}
+        {% if form.recruitment_duration_unit.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.recruitment_duration_unit.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
   </table>
 
   <button type="submit" class="btn btn-success">Save</button>
@@ -57,18 +357,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const proposalSelect = document.getElementById("id_proposal");
   const sowIdInput = document.getElementById("id_sow_id");
 
-  // Only auto-set if there's no existing value (i.e., on create or if sow_id is empty).
-  // If you're editing an existing SOW, you probably don't want to overwrite the SOW ID.
+  // Only auto-set if there's no existing value (i.e., on create or if sow_id is empty)
   if (!sowIdInput.value) {
-    // Initialize sow_id with the currently selected proposal's text + '-S'
     let selectedProposalText = proposalSelect.options[proposalSelect.selectedIndex].text;
     sowIdInput.value = selectedProposalText + "-S";
   }
 
-  // Whenever the user changes the Proposal dropdown, update the SOW ID if it's still empty or in our default format
   proposalSelect.addEventListener("change", function() {
-    // Optionally check if the user hasn't manually changed sowIdInput to something else
-    // For simplicity, we update it whenever the proposal changes if there's no custom user input
     if (!sowIdInput.value || sowIdInput.value.endsWith("-S")) {
       let selectedProposalText = proposalSelect.options[proposalSelect.selectedIndex].text;
       sowIdInput.value = selectedProposalText + "-S";
