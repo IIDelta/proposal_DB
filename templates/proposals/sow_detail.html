@@ -1,0 +1,37 @@
+<!-- templates/proposals/sow_detail.html -->
+{% extends 'proposals/base.html' %}
+{% block title %}SOW Detail{% endblock %}
+{% block content %}
+<h1>SOW: {{ sow.sow_id }}</h1>
+<h2>Proposal ID: {{ sow.proposal.proposal_id }}</h2>
+
+<h3>BD Data</h3>
+<table class="table table-bordered">
+  <tr><th>Date Questionnaire Issued</th><td>{{ sow.date_questionnaire_issued }}</td></tr>
+  <tr><th>Bid Defense Required</th><td>{{ sow.bid_defense_required }}</td></tr>
+  <tr><th>Bid Defense Results</th><td>{{ sow.bid_defense_results }}</td></tr>
+  <tr><th>MW Assigned to Synopsis</th><td>{{ sow.mw_assigned_to_synopsis }}</td></tr>
+  <tr><th>Study Design Version</th><td>{{ sow.study_design_version }}</td></tr>
+  <tr><th>Study Design Approval Date</th><td>{{ sow.study_design_approval_date }}</td></tr>
+  <tr><th>Pricing Version</th><td>{{ sow.pricing_version }}</td></tr>
+  <tr><th>Pricing Approval Date</th><td>{{ sow.pricing_approval_date }}</td></tr>
+  <tr><th>Final Proposal Version</th><td>{{ sow.final_proposal_version }}</td></tr>
+  <tr><th>Final Proposal Approval Date</th><td>{{ sow.final_proposal_approval_date }}</td></tr>
+</table>
+
+<h3>Preparation Checklist</h3>
+<table class="table table-bordered">
+  <tr><th>Budget Lower Limit</th><td>{{ sow.budget_lower_limit }}</td></tr>
+  <tr><th>Budget Upper Limit</th><td>{{ sow.budget_upper_limit }}</td></tr>
+  <tr><th>Proposal Due Date</th><td>{{ sow.proposal_due_date }}</td></tr>
+  <tr><th>Primary Objective</th><td>{{ sow.primary_objective }}</td></tr>
+  <tr><th>Vendors Identified</th><td>{{ sow.vendors_identified }}</td></tr>
+  <tr><th>Sample Size</th><td>{{ sow.sample_size }}</td></tr>
+  <tr><th>Sample Size Justification</th><td>{{ sow.sample_size_justification }}</td></tr>
+  <tr><th>Recruitment Duration (Value)</th><td>{{ sow.recruitment_duration_value }}</td></tr>
+  <tr><th>Recruitment Duration (Unit)</th><td>{{ sow.recruitment_duration_unit }}</td></tr>
+</table>
+
+<a href="{% url 'sow_update' sow.pk %}" class="btn btn-warning">Edit SOW</a>
+<a href="{% url 'sow_list' %}" class="btn btn-secondary">Back to List</a>
+{% endblock %}

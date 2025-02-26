@@ -1,0 +1,59 @@
+<!-- templates/proposals/sow_list.html -->
+{% extends 'proposals/base.html' %}
+{% block title %}SOW List{% endblock %}
+{% block content %}
+<h1>SOW Records</h1>
+
+<div class="mb-3">
+  <a href="{% url 'proposal_create' %}" class="btn btn-primary">Add New Proposal</a>
+  <a href="{% url 'sow_create' %}" class="btn btn-primary">Add New SOW</a>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Proposal ID</th>
+      <th>SOW ID</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sow in sows %}
+      <tr>
+        <td>{{ sow.proposal.proposal_id }}</td>
+        <td>
+          <a href="{% url 'sow_detail' sow.pk %}">{{ sow.sow_id }}</a>
+        </td>
+        <td>
+          <a href="{% url 'sow_update' sow.pk %}" class="btn btn-sm btn-warning">Edit SOW</a>
+          <a href="{% url 'sow_delete' sow.pk %}" class="btn btn-sm btn-danger">Delete SOW</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="3">No SOWs found.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      </li>
+    {% endif %}
+    <li class="page-item active">
+      <a class="page-link" href="#">{{ page_obj.number }}</a>
+    </li>
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+<!-- templates/proposals/proposal_confirm_delete.html -->
+{% extends 'proposals/base.html' %}
+{% block title %}Delete Proposal{% endblock %}
+{% block content %}
+<h1>Are you sure you want to delete Proposal {{ object.proposal_id }}?</h1>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Delete</button>
+  <a href="{% url 'sow_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
