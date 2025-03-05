@@ -75,14 +75,18 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'proposal_DB',             # Your database name
-        'HOST': 'NUTRA-Deploy02',         # Your SQL Server name
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'trusted_connection': 'yes',  # Windows Authentication
+    "default": {
+        "ENGINE": "mssql",
+        "NAME": "proposal_DB",
+        "USER": "ProposalDBAPP",
+        "PASSWORD": "(sdd2WdwK<&!e774",
+        "HOST": "NUTRA-DB01\\sqlexpress",
+        "PORT": "",
+        "OPTIONS": {
+            "driver": "ODBC Driver 17 for SQL Server",
+            "extra_params": "Trusted_Connection=no;",
         },
     }
 }
