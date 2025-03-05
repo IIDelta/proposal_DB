@@ -1,6 +1,5 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .models import Proposal, SOW
 from .forms import ProposalForm, SOWForm
@@ -27,7 +26,7 @@ class SOWListView(ListView):
 
 
 # Proposal CRUD Views
-class ProposalCreateView(LoginRequiredMixin, CreateView):
+class ProposalCreateView(CreateView):
     model = Proposal
     form_class = ProposalForm
     template_name = 'proposals/proposal_form.html'
@@ -37,7 +36,7 @@ class ProposalCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Proposal created successfully.")
         return super().form_valid(form)
 
-class ProposalUpdateView(LoginRequiredMixin, UpdateView):
+class ProposalUpdateView(UpdateView):
     model = Proposal
     form_class = ProposalForm
     template_name = 'proposals/proposal_form.html'
@@ -47,7 +46,7 @@ class ProposalUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Proposal updated successfully.")
         return super().form_valid(form)
 
-class ProposalDeleteView(LoginRequiredMixin, DeleteView):
+class ProposalDeleteView(DeleteView):
     model = Proposal
     template_name = 'proposals/proposal_confirm_delete.html'
     success_url = reverse_lazy('proposal_sow_list')
@@ -62,7 +61,7 @@ class SOWDetailView(DetailView):
     template_name = 'proposals/sow_detail.html'
     context_object_name = 'sow'
 
-class SOWCreateView(LoginRequiredMixin, CreateView):
+class SOWCreateView(CreateView):
     model = SOW
     form_class = SOWForm
     template_name = 'proposals/sow_form.html'
@@ -74,7 +73,7 @@ class SOWCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class SOWUpdateView(LoginRequiredMixin, UpdateView):
+class SOWUpdateView(UpdateView):
     model = SOW
     form_class = SOWForm
     template_name = 'proposals/sow_form.html'
@@ -84,7 +83,7 @@ class SOWUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "SOW updated successfully.")
         return super().form_valid(form)
 
-class SOWDeleteView(LoginRequiredMixin, DeleteView):
+class SOWDeleteView(DeleteView):
     model = SOW
     template_name = 'proposals/sow_confirm_delete.html'
     success_url = reverse_lazy('proposal_sow_list')
