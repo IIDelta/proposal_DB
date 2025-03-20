@@ -5,10 +5,14 @@ from django.core.validators import RegexValidator
 
 
 class Proposal(models.Model):
-    # Enforce format: exactly 4 digits, a hyphen, 1-4 letters, a hyphen, 'P', and exactly 2 digits.
+    # Enforce format: exactly 4 digits,
+    # a hyphen, 1-4 letters, a hyphen, 'P', and exactly 2 digits.
     proposal_id_validator = RegexValidator(
         regex=r'^[0-9]{2}-[a-zA-Z]+-P[0-9]{2}$',
-        message="Proposal ID must be in the format 'YY-test-PNN' (e.g., 25-test-P01)"
+        message=(
+            "Proposal ID must be in the format"
+            " 'YY-test-PNN' (e.g., 25-test-P01)"
+        )
     )
     proposal_id = models.CharField(
         max_length=50,
@@ -23,15 +27,21 @@ class Proposal(models.Model):
 
 
 class SOW(models.Model):
-    # Validator to ensure that the sow_id ends with "-S" followed by two digits.
+    # Validator to ensure that the sow_id
+    # ends with "-S" followed by two digits.
     sow_id_validator = RegexValidator(
         regex=r'^.*-S\d{2}$',
-        message="SOW ID must end with '-S' followed by exactly two digits (e.g., -S01)."
+        message=(
+            "SOW ID must end with '-S' "
+            "followed by exactly two digits (e.g., -S01)."
+        )
     )
-    
-    proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE, related_name='sows')
-    sow_id = models.CharField(max_length=60, unique=True, validators=[sow_id_validator])
-    
+
+    proposal = models.ForeignKey(
+        'Proposal', on_delete=models.CASCADE, related_name='sows')
+    sow_id = models.CharField(
+        max_length=60, unique=True, validators=[sow_id_validator])
+
     # BD Data Fields
     date_questionnaire_issued = models.DateField(null=True, blank=True)
     bid_defense_required = models.BooleanField(default=False)
@@ -43,7 +53,9 @@ class SOW(models.Model):
     pricing_approval_date = models.DateField(null=True, blank=True)
     final_proposal_version = models.CharField(max_length=20, blank=True)
     final_proposal_approval_date = models.DateField(null=True, blank=True)
-    
+    rfp = models.BooleanField(
+        default=False, help_text="Check if this SOW is an RFP")
+
     # Preparation Checklist Fields
     budget_lower_limit = models.IntegerField(null=True, blank=True)
     budget_upper_limit = models.IntegerField(null=True, blank=True)
@@ -54,17 +66,22 @@ class SOW(models.Model):
     sample_size_justification = models.TextField(blank=True)
     recruitment_duration_value = models.IntegerField(null=True, blank=True)
     recruitment_duration_unit = models.CharField(max_length=20, default='days')
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
         """
-        Ensure that the sow_id starts with the associated proposal's proposal_id.
+        Ensure that the sow_id starts
+        with the associated proposal's proposal_id.
         """
-        if self.proposal and not self.sow_id.startswith(self.proposal.proposal_id):
+        if self.proposal and not self.sow_id.startswith(
+                self.proposal.proposal_id
+                ):
             raise ValidationError(
-                f"SOW ID must start with the Proposal ID ({self.proposal.proposal_id})."
+                f"SOW ID must start with the Proposal ID ("
+                f"{self.proposal.proposal_id}"
+                ")."
             )
 
     def save(self, *args, **kwargs):

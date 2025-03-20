@@ -61,6 +61,16 @@ class SOWForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={
             'placeholder': 'Enter upper limit in CAD'})
     )
+    rfp = forms.BooleanField(
+        required=False,
+        label="RFP",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        help_text="Check if this SOW is an RFP"
+    )
+    bid_defense_required = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     vendors_identified = forms.CharField(
         required=False,
         label="Vendors Identified (comma separated)",
@@ -75,7 +85,7 @@ class SOWForm(forms.ModelForm):
         widget=forms.TextInput(attrs={
             'placeholder': 'Enter Proposal ID',
             'list': 'proposalList'
-        })
+        }),
     )
 
     class Meta:
