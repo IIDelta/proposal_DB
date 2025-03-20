@@ -1,19 +1,23 @@
 from django import forms
 from .models import Proposal, SOW
 
+
 class ProposalForm(forms.ModelForm):
     class Meta:
         model = Proposal
         fields = ['proposal_id']  # Only the ID for creation/deletion
 
+
 class CustomDateInput(forms.DateInput):
     format = '%Y.%m.%d'
     input_type = 'text'
+
 
 RECRUITMENT_UNIT_CHOICES = [
     ('weeks', 'Weeks'),
     ('months', 'Months'),
 ]
+
 
 class SOWForm(forms.ModelForm):
     date_questionnaire_issued = forms.DateField(
@@ -48,12 +52,14 @@ class SOWForm(forms.ModelForm):
     budget_lower_limit = forms.IntegerField(
         required=False,
         label="Budget Lower Limit (CAD)",
-        widget=forms.NumberInput(attrs={'placeholder': 'Enter lower limit in CAD'})
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Enter lower limit in CAD'})
     )
     budget_upper_limit = forms.IntegerField(
         required=False,
         label="Budget Upper Limit (CAD)",
-        widget=forms.NumberInput(attrs={'placeholder': 'Enter upper limit in CAD'})
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Enter upper limit in CAD'})
     )
     vendors_identified = forms.CharField(
         required=False,

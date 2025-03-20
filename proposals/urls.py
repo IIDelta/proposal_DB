@@ -1,12 +1,12 @@
 from django.urls import path
 from .views import (
     SOWListView,
-    ProposalCreateView, 
-    ProposalUpdateView, 
+    ProposalCreateView,
+    ProposalUpdateView,
     ProposalDeleteView,
-    SOWDetailView, 
-    SOWCreateView, 
-    SOWUpdateView, 
+    SOWDetailView,
+    SOWCreateView,
+    SOWUpdateView,
     SOWDeleteView
 )
 

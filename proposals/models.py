@@ -3,23 +3,24 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
+
 class Proposal(models.Model):
     # Enforce format: exactly 4 digits, a hyphen, 1-4 letters, a hyphen, 'P', and exactly 2 digits.
     proposal_id_validator = RegexValidator(
-        regex=r'^\d{4}-[A-Za-z]{1,4}-P\d{2}$',
-        message="Proposal ID must be in the format 'XXXX-text-PXX', where X are digits and 'text' is 1 to 4 letters."
+        regex=r'^[0-9]{2}-[a-zA-Z]+-P[0-9]{2}$',
+        message="Proposal ID must be in the format 'YY-test-PNN' (e.g., 25-test-P01)"
     )
     proposal_id = models.CharField(
         max_length=50,
         unique=True,
         validators=[proposal_id_validator]
     )
-    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.proposal_id
+
 
 class SOW(models.Model):
     # Validator to ensure that the sow_id ends with "-S" followed by two digits.
