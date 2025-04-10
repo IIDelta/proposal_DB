@@ -1,5 +1,5 @@
 {% extends 'proposals/base.html' %}
-{% block title %}SOW Records{% endblock %}
+{% block title %}Proposal/SOW Records{% endblock %}
 {% block content %}
 <h1>Proposal/SOW Records</h1>
 
@@ -34,7 +34,7 @@
         {# Proposal with one or more SOWs: merge proposal cell over multiple rows #}
         <tr>
           <td rowspan="{{ sows|length }}">
-            <strong><a href="{% url 'proposal_detail' proposal.pk %}">{{ proposal.proposal_id }}</a></strong><br/>
+            <strong><a href="{% url 'proposal_detail' proposal.pk %}">{{ proposal.proposal_id }}</a></strong>
             <a href="{% url 'proposal_update' proposal.pk %}" title="Edit Proposal">
               &#9881;
             </a>
@@ -69,7 +69,7 @@
         {# Proposal without any SOWs #}
         <tr>
           <td>
-            <strong>{{ proposal.proposal_id }}</strong><br/>
+            <strong><a href="{% url 'proposal_detail' proposal.pk %}">{{ proposal.proposal_id }}</a></strong>
             <a href="{% url 'proposal_update' proposal.pk %}" title="Edit Proposal">
               &#9881;
             </a>

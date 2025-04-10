@@ -13,7 +13,7 @@ from .views import (
 
 urlpatterns = [
     # Combined view: proposals and their SOWs
-    path('proposals/', SOWListView.as_view(), name='proposal_sow_list'),
+    path('', SOWListView.as_view(), name='proposal_sow_list'),
 
     # Proposal CRUD URLs
     path('proposal/create/', ProposalCreateView.as_view(), name='proposal_create'),
