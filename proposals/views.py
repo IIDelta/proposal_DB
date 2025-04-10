@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import Proposal, SOW
 from .forms import ProposalForm, SOWForm
 
+
 # Combined listing view: lists proposals and their associated SOWs.
 class SOWListView(ListView):
     model = Proposal
@@ -36,6 +37,7 @@ class ProposalCreateView(CreateView):
         messages.success(self.request, "Proposal created successfully.")
         return super().form_valid(form)
 
+
 class ProposalUpdateView(UpdateView):
     model = Proposal
     form_class = ProposalForm
@@ -46,6 +48,7 @@ class ProposalUpdateView(UpdateView):
         messages.success(self.request, "Proposal updated successfully.")
         return super().form_valid(form)
 
+
 class ProposalDeleteView(DeleteView):
     model = Proposal
     template_name = 'proposals/proposal_confirm_delete.html'
@@ -55,11 +58,13 @@ class ProposalDeleteView(DeleteView):
         messages.success(self.request, "Proposal deleted successfully.")
         return super().delete(request, *args, **kwargs)
 
+
 # SOW CRUD Views
 class SOWDetailView(DetailView):
     model = SOW
     template_name = 'proposals/sow_detail.html'
     context_object_name = 'sow'
+
 
 class SOWCreateView(CreateView):
     model = SOW
@@ -83,6 +88,7 @@ class SOWUpdateView(UpdateView):
         messages.success(self.request, "SOW updated successfully.")
         return super().form_valid(form)
 
+
 class SOWDeleteView(DeleteView):
     model = SOW
     template_name = 'proposals/sow_confirm_delete.html'
@@ -91,3 +97,9 @@ class SOWDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "SOW deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+
+class ProposalDetailView(DetailView):
+    model = Proposal
+    template_name = 'proposals/proposal_detail.html'
+    context_object_name = 'proposal'  # Use 'proposal' in the template context

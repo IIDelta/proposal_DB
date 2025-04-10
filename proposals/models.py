@@ -4,44 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 
-class Proposal(models.Model):
-    # Enforce format: exactly 4 digits,
-    # a hyphen, 1-4 letters, a hyphen, 'P', and exactly 2 digits.
-    proposal_id_validator = RegexValidator(
-        regex=r'^[0-9]{2}-[a-zA-Z]+-P[0-9]{2}$',
-        message=(
-            "Proposal ID must be in the format"
-            " 'YY-test-PNN' (e.g., 25-test-P01)"
-        )
-    )
-    proposal_id = models.CharField(
-        max_length=50,
-        unique=True,
-        validators=[proposal_id_validator]
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.proposal_id
-
-
-class SOW(models.Model):
-    # Validator to ensure that the sow_id
-    # ends with "-S" followed by two digits.
-    sow_id_validator = RegexValidator(
-        regex=r'^.*-S\d{2}$',
-        message=(
-            "SOW ID must end with '-S' "
-            "followed by exactly two digits (e.g., -S01)."
-        )
-    )
-
-    proposal = models.ForeignKey(
-        'Proposal', on_delete=models.CASCADE, related_name='sows')
-    sow_id = models.CharField(
-        max_length=60, unique=True, validators=[sow_id_validator])
-
+class SharedProposalData(models.Model):
     # BD Data Fields
     date_questionnaire_issued = models.DateField(null=True, blank=True)
     bid_defense_required = models.BooleanField(default=False)
@@ -66,6 +29,48 @@ class SOW(models.Model):
     sample_size_justification = models.TextField(blank=True)
     recruitment_duration_value = models.IntegerField(null=True, blank=True)
     recruitment_duration_unit = models.CharField(max_length=20, default='days')
+
+    class Meta:
+        abstract = True  # Make this model abstract
+
+
+class Proposal(SharedProposalData):
+    # Enforce format: exactly 4 digits,
+    # a hyphen, 1-4 letters, a hyphen, 'P', and exactly 2 digits.
+    proposal_id_validator = RegexValidator(
+        regex=r'^[0-9]{2}-[a-zA-Z]+-P[0-9]{2}$',
+        message=(
+            "Proposal ID must be in the format"
+            " 'YY-test-PNN' (e.g., 25-test-P01)"
+        )
+    )
+    proposal_id = models.CharField(
+        max_length=50,
+        unique=True,
+        validators=[proposal_id_validator]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.proposal_id
+
+
+class SOW(SharedProposalData):
+    # Validator to ensure that the sow_id
+    # ends with "-S" followed by two digits.
+    sow_id_validator = RegexValidator(
+        regex=r'^.*-S\d{2}$',
+        message=(
+            "SOW ID must end with '-S' "
+            "followed by exactly two digits (e.g., -S01)."
+        )
+    )
+
+    proposal = models.ForeignKey(
+        'Proposal', on_delete=models.CASCADE, related_name='sows')
+    sow_id = models.CharField(
+        max_length=60, unique=True, validators=[sow_id_validator])
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

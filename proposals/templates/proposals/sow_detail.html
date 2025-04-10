@@ -8,6 +8,7 @@
 <h3>BD Data</h3>
 <table class="table table-bordered">
   <tr><th>Date Questionnaire Issued</th><td>{{ sow.date_questionnaire_issued }}</td></tr>
+  <tr><th>RFP Required</th><td>{{ sow.rfp }}</td></tr>
   <tr><th>Bid Defense Required</th><td>{{ sow.bid_defense_required }}</td></tr>
   <tr><th>Bid Defense Results</th><td>{{ sow.bid_defense_results }}</td></tr>
   <tr><th>MW Assigned to Synopsis</th><td>{{ sow.mw_assigned_to_synopsis }}</td></tr>
@@ -25,7 +26,27 @@
   <tr><th>Budget Upper Limit</th><td>{{ sow.budget_upper_limit }}</td></tr>
   <tr><th>Proposal Due Date</th><td>{{ sow.proposal_due_date }}</td></tr>
   <tr><th>Primary Objective</th><td>{{ sow.primary_objective }}</td></tr>
-  <tr><th>Vendors Identified</th><td>{{ sow.vendors_identified }}</td></tr>
+
+  <tr>
+    <th>Vendors Identified</th>
+    <td>
+      {% if sow.vendors_identified %} {# Check if the list exists and is not empty #}
+        {% if sow.vendors_identified|length == 1 %} {# Check if there is exactly one vendor #}
+          {{ sow.vendors_identified.0 }} {# Display the first (only) item directly #}
+        {% elif sow.vendors_identified|length > 1 %} {# Check if there are multiple vendors #}
+          <ul>
+            {% for vendor in sow.vendors_identified %} {# Loop through the list #}
+              <li>{{ vendor }}</li> {# Display each vendor as a list item #}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% else %}
+        {# Optional: Display something if the list is empty or None #}
+        <em>No vendors identified.</em> 
+      {% endif %}
+    </td>
+  </tr>
+
   <tr><th>Sample Size</th><td>{{ sow.sample_size }}</td></tr>
   <tr><th>Sample Size Justification</th><td>{{ sow.sample_size_justification }}</td></tr>
   <tr><th>Recruitment Duration (Value)</th><td>{{ sow.recruitment_duration_value }}</td></tr>

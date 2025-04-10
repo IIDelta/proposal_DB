@@ -1,0 +1,219 @@
+{% extends 'proposals/base.html' %}
+{% block title %}{% if object %}Edit Proposal{% else %}Create Proposal{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if object %}Edit Proposal: {{ object.proposal_id }}{% else %}Create Proposal{% endif %}</h1>
+
+{# Display form-wide (non-field) errors #}
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <h3>Identifiers</h3>
+  <table class="table table-bordered">
+    <tr>
+      <th>Proposal ID</th>
+      <td>
+        {# If editing, proposal_id might be read-only or handled differently #}
+        {% if object %}
+            {{ form.proposal_id }} 
+            {# Or just display the ID if it's not editable: {{ object.proposal_id }} #}
+            {% if form.proposal_id.help_text %}<small class="form-text text-muted">{{ form.proposal_id.help_text }}</small>{% endif %}
+        {% else %}
+            {# Allow input for creation #}
+            {{ form.proposal_id }}
+            {% if form.proposal_id.help_text %}<small class="form-text text-muted">{{ form.proposal_id.help_text }}</small>{% endif %}
+        {% endif %}
+        {% if form.proposal_id.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.proposal_id.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <h3>BD Data</h3>
+  <table class="table table-bordered">
+    {# Copy relevant rows from sow_form.html, changing field names if needed #}
+    {# Example for date_questionnaire_issued #}
+     <tr>
+      <th>Date Questionnaire Issued</th>
+      <td>
+        {{ form.date_questionnaire_issued }}
+        {% if form.date_questionnaire_issued.errors %}
+          <div class="text-danger">
+            <ul>
+              {% for error in form.date_questionnaire_issued.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>RFP</th>
+      <td style="padding-left: 50px;"> {# Keep consistent styling if desired #}
+         {{ form.rfp }}
+        {% if form.rfp.errors %}
+          <div class="text-danger"><ul>{% for error in form.rfp.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Bid Defense Required</th>
+       <td style="padding-left: 50px;"> {# Keep consistent styling if desired #}
+         {{ form.bid_defense_required }}
+        {% if form.bid_defense_required.errors %}
+          <div class="text-danger"><ul>{% for error in form.bid_defense_required.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>
+        {% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Bid Defense Results</th>
+      <td>
+        {{ form.bid_defense_results }}
+        {% if form.bid_defense_results.errors %}<div class="text-danger"><ul>{% for error in form.bid_defense_results.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>MW Assigned to Synopsis</th>
+      <td>
+        {{ form.mw_assigned_to_synopsis }}
+        {% if form.mw_assigned_to_synopsis.errors %}<div class="text-danger"><ul>{% for error in form.mw_assigned_to_synopsis.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Study Design Version</th>
+      <td>
+        {{ form.study_design_version }}
+        {% if form.study_design_version.errors %}<div class="text-danger"><ul>{% for error in form.study_design_version.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Study Design Approval Date</th>
+      <td>
+        {{ form.study_design_approval_date }}
+        {% if form.study_design_approval_date.errors %}<div class="text-danger"><ul>{% for error in form.study_design_approval_date.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Pricing Version</th>
+      <td>
+        {{ form.pricing_version }}
+        {% if form.pricing_version.errors %}<div class="text-danger"><ul>{% for error in form.pricing_version.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Pricing Approval Date</th>
+      <td>
+        {{ form.pricing_approval_date }}
+        {% if form.pricing_approval_date.errors %}<div class="text-danger"><ul>{% for error in form.pricing_approval_date.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Final Proposal Version</th>
+      <td>
+        {{ form.final_proposal_version }}
+        {% if form.final_proposal_version.errors %}<div class="text-danger"><ul>{% for error in form.final_proposal_version.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Final Proposal Approval Date</th>
+      <td>
+        {{ form.final_proposal_approval_date }}
+        {% if form.final_proposal_approval_date.errors %}<div class="text-danger"><ul>{% for error in form.final_proposal_approval_date.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    {# Add other BD Data fields here following the pattern #}
+  </table>
+
+  <h3>Preparation Checklist</h3>
+  <table class="table table-bordered">
+    {# Copy relevant rows from sow_form.html, changing field names if needed #}
+    {# Example for budget_lower_limit #}
+     <tr>
+      <th>Budget Lower Limit</th>
+      <td>
+        {{ form.budget_lower_limit }}
+        {% if form.budget_lower_limit.errors %}<div class="text-danger"><ul>{% for error in form.budget_lower_limit.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Budget Upper Limit</th>
+      <td>
+        {{ form.budget_upper_limit }}
+        {% if form.budget_upper_limit.errors %}<div class="text-danger"><ul>{% for error in form.budget_upper_limit.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Proposal Due Date</th>
+      <td>
+        {{ form.proposal_due_date }}
+        {% if form.proposal_due_date.errors %}<div class="text-danger"><ul>{% for error in form.proposal_due_date.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Primary Objective</th>
+      <td>
+        {{ form.primary_objective }}
+        {% if form.primary_objective.errors %}<div class="text-danger"><ul>{% for error in form.primary_objective.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Vendors Identified</th>
+      <td>
+        {{ form.vendors_identified }}
+         {% if form.vendors_identified.help_text %}<small class="form-text text-muted">{{ form.vendors_identified.help_text }}</small>{% endif %}
+        {% if form.vendors_identified.errors %}<div class="text-danger"><ul>{% for error in form.vendors_identified.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Sample Size</th>
+      <td>
+        {{ form.sample_size }}
+        {% if form.sample_size.errors %}<div class="text-danger"><ul>{% for error in form.sample_size.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Sample Size Justification</th>
+      <td>
+        {{ form.sample_size_justification }}
+        {% if form.sample_size_justification.errors %}<div class="text-danger"><ul>{% for error in form.sample_size_justification.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Recruitment Duration Value</th>
+      <td>
+        {{ form.recruitment_duration_value }}
+        {% if form.recruitment_duration_value.errors %}<div class="text-danger"><ul>{% for error in form.recruitment_duration_value.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+     <tr>
+      <th>Recruitment Duration Unit</th>
+      <td>
+        {{ form.recruitment_duration_unit }}
+        {% if form.recruitment_duration_unit.errors %}<div class="text-danger"><ul>{% for error in form.recruitment_duration_unit.errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+      </td>
+    </tr>
+    {# Add other Preparation Checklist fields here following the pattern #}
+  </table>
+
+  <button type="submit" class="btn btn-success">Save</button>
+  {# Assuming you want to go back to the main list #}
+  <a href="{% url 'proposal_sow_list' %}" class="btn btn-secondary">Cancel</a> 
+</form>
+{% endblock %}

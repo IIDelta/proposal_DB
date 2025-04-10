@@ -1,0 +1,77 @@
+{% extends 'proposals/base.html' %}
+{% block title %}Proposal Detail{% endblock %}
+{% block content %}
+<h1>Proposal: {{ proposal.proposal_id }}</h1>
+
+<h3>BD Data</h3>
+<table class="table table-bordered">
+  {# Display fields inherited from SharedProposalData #}
+  <tr><th>Date Questionnaire Issued</th><td>{{ proposal.date_questionnaire_issued|default:"N/A" }}</td></tr>
+  <tr><th>RFP</th><td>{{ proposal.rfp|yesno:"Yes,No" }}</td></tr>
+  <tr><th>Bid Defense Required</th><td>{{ proposal.bid_defense_required|yesno:"Yes,No" }}</td></tr>
+  <tr><th>Bid Defense Results</th><td>{{ proposal.bid_defense_results|default:"N/A" }}</td></tr>
+  <tr><th>MW Assigned to Synopsis</th><td>{{ proposal.mw_assigned_to_synopsis|default:"N/A" }}</td></tr>
+  <tr><th>Study Design Version</th><td>{{ proposal.study_design_version|default:"N/A" }}</td></tr>
+  <tr><th>Study Design Approval Date</th><td>{{ proposal.study_design_approval_date|default:"N/A" }}</td></tr>
+  <tr><th>Pricing Version</th><td>{{ proposal.pricing_version|default:"N/A" }}</td></tr>
+  <tr><th>Pricing Approval Date</th><td>{{ proposal.pricing_approval_date|default:"N/A" }}</td></tr>
+  <tr><th>Final Proposal Version</th><td>{{ proposal.final_proposal_version|default:"N/A" }}</td></tr>
+  <tr><th>Final Proposal Approval Date</th><td>{{ proposal.final_proposal_approval_date|default:"N/A" }}</td></tr>
+</table>
+
+<h3>Preparation Checklist</h3>
+<table class="table table-bordered">
+  {# Display fields inherited from SharedProposalData #}
+  <tr><th>Budget Lower Limit</th><td>{{ proposal.budget_lower_limit|default:"N/A" }}</td></tr>
+  <tr><th>Budget Upper Limit</th><td>{{ proposal.budget_upper_limit|default:"N/A" }}</td></tr>
+  <tr><th>Proposal Due Date</th><td>{{ proposal.proposal_due_date|default:"N/A" }}</td></tr>
+  <tr><th>Primary Objective</th><td>{{ proposal.primary_objective|default:"N/A" }}</td></tr>
+  <tr>
+    <th>Vendors Identified</th>
+    <td>
+      {% if proposal.vendors_identified %} {# Check if the list exists and is not empty #}
+        {% if proposal.vendors_identified|length == 1 %} {# Check if there is exactly one vendor #}
+          {{ proposal.vendors_identified.0 }} {# Display the first (only) item directly #}
+        {% elif proposal.vendors_identified|length > 1 %} {# Check if there are multiple vendors #}
+          <ul>
+            {% for vendor in proposal.vendors_identified %} {# Loop through the list #}
+              <li>{{ vendor }}</li> {# Display each vendor as a list item #}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% else %}
+        {# Optional: Display something if the list is empty or None #}
+        <em>No vendors identified.</em> 
+      {% endif %}
+    </td>
+  </tr>
+  <tr><th>Sample Size</th><td>{{ proposal.sample_size|default:"N/A" }}</td></tr>
+  <tr><th>Sample Size Justification</th><td>{{ proposal.sample_size_justification|default:"N/A" }}</td></tr>
+  <tr><th>Recruitment Duration (Value)</th><td>{{ proposal.recruitment_duration_value|default:"N/A" }}</td></tr>
+  <tr><th>Recruitment Duration (Unit)</th><td>{{ proposal.recruitment_duration_unit|default:"N/A" }}</td></tr>
+</table>
+
+{# Add section for related SOWs #}
+<h3>Associated SOWs</h3>
+{% with proposal.sows.all as sows %}
+  {% if sows %}
+    <ul class="list-group">
+      {% for sow in sows %}
+        <li class="list-group-item">
+          <a href="{% url 'sow_detail' sow.pk %}">{{ sow.sow_id }}</a> 
+          <a href="{% url 'sow_update' sow.pk %}" class="btn btn-sm btn-outline-secondary float-right ml-1" title="Edit SOW">&#9881;</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p><em>No SOWs associated with this proposal.</em></p>
+  {% endif %}
+{% endwith %}
+<br> {# Add some spacing #}
+
+{# Action Buttons #}
+<a href="{% url 'proposal_update' proposal.pk %}" class="btn btn-warning">Edit Proposal</a>
+<a href="{% url 'proposal_sow_list' %}" class="btn btn-secondary">Back to List</a>
+{# Consider adding delete button if needed: <a href="{% url 'proposal_delete' proposal.pk %}" class="btn btn-danger">Delete Proposal</a> #}
+
+{% endblock %}

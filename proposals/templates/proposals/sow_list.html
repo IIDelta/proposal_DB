@@ -34,7 +34,7 @@
         {# Proposal with one or more SOWs: merge proposal cell over multiple rows #}
         <tr>
           <td rowspan="{{ sows|length }}">
-            <strong>{{ proposal.proposal_id }}</strong><br/>
+            <strong><a href="{% url 'proposal_detail' proposal.pk %}">{{ proposal.proposal_id }}</a></strong><br/>
             <a href="{% url 'proposal_update' proposal.pk %}" title="Edit Proposal">
               &#9881;
             </a>
