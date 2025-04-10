@@ -22,6 +22,7 @@
 <h3>Preparation Checklist</h3>
 <table class="table table-bordered">
   {# Display fields inherited from SharedProposalData #}
+  <tr><th>Proposed Service Level</th><td>{{ proposal.get_proposed_service_level_display|default:"N/A" }}</td></tr>
   <tr><th>Budget Lower Limit</th><td>{{ proposal.budget_lower_limit|default:"N/A" }}</td></tr>
   <tr><th>Budget Upper Limit</th><td>{{ proposal.budget_upper_limit|default:"N/A" }}</td></tr>
   <tr><th>Proposal Due Date</th><td>{{ proposal.proposal_due_date|default:"N/A" }}</td></tr>

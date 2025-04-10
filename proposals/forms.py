@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proposal, SOW
+from .models import Proposal, SOW, SharedProposalData
 
 
 class CustomDateInput(forms.DateInput):
@@ -41,6 +41,11 @@ class ProposalForm(forms.ModelForm):
     recruitment_duration_unit = forms.ChoiceField(
         choices=RECRUITMENT_UNIT_CHOICES,
         required=False
+    )
+    proposed_service_level = forms.ChoiceField(
+        choices=[('', '---------')] + SharedProposalData.SERVICE_LEVEL_CHOICES,  # Add an empty choice
+        required=False,  # Make it optional if desired
+        widget=forms.Select(attrs={'class': 'form-control'})  # Use standard dropdown
     )
     budget_lower_limit = forms.IntegerField(
         required=False,
@@ -101,7 +106,6 @@ class ProposalForm(forms.ModelForm):
         return []
 
 
-
 class SOWForm(forms.ModelForm):
     date_questionnaire_issued = forms.DateField(
         widget=CustomDateInput(),
@@ -131,6 +135,11 @@ class SOWForm(forms.ModelForm):
     recruitment_duration_unit = forms.ChoiceField(
         choices=RECRUITMENT_UNIT_CHOICES,
         required=False
+    )
+    proposed_service_level = forms.ChoiceField(
+        choices=[('', '---------')] + SharedProposalData.SERVICE_LEVEL_CHOICES,  # Add an empty choice
+        required=False,  # Make it optional if desired
+        widget=forms.Select(attrs={'class': 'form-control'})  # Use standard dropdown
     )
     budget_lower_limit = forms.IntegerField(
         required=False,

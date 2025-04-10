@@ -5,6 +5,14 @@ from django.core.validators import RegexValidator
 
 
 class SharedProposalData(models.Model):
+
+    SERVICE_LEVEL_CHOICES = [
+        ('Bronze', 'Bronze'),
+        ('Silver', 'Silver'),
+        ('Gold', 'Gold'),
+        ('Platinum', 'Platinum'),
+    ]
+
     # BD Data Fields
     date_questionnaire_issued = models.DateField(null=True, blank=True)
     bid_defense_required = models.BooleanField(default=False)
@@ -20,6 +28,13 @@ class SharedProposalData(models.Model):
         default=False, help_text="Check if this SOW is an RFP")
 
     # Preparation Checklist Fields
+    proposed_service_level = models.CharField(
+        max_length=10,
+        choices=SERVICE_LEVEL_CHOICES,
+        null=True,  # Allow it to be empty initially
+        blank=True,  # Allow it to be empty in forms/admin
+        default=None  # Or set a default like 'Bronze' if desired
+    )
     budget_lower_limit = models.IntegerField(null=True, blank=True)
     budget_upper_limit = models.IntegerField(null=True, blank=True)
     proposal_due_date = models.DateField(null=True, blank=True)

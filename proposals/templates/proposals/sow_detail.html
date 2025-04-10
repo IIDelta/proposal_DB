@@ -22,6 +22,7 @@
 
 <h3>Preparation Checklist</h3>
 <table class="table table-bordered">
+  <tr><th>Proposed Service Level</th><td>{{ sow.get_proposed_service_level_display|default:"N/A" }}</td></tr>
   <tr><th>Budget Lower Limit</th><td>{{ sow.budget_lower_limit }}</td></tr>
   <tr><th>Budget Upper Limit</th><td>{{ sow.budget_upper_limit }}</td></tr>
   <tr><th>Proposal Due Date</th><td>{{ sow.proposal_due_date }}</td></tr>
