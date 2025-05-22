@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proposal, SOW, SharedProposalData, Questionnaire
+from .models import Proposal, SOW, SharedProposalData, Questionnaire, StandardizedQuestionnaire
 
 
 class CustomDateInput(forms.DateInput):
@@ -220,54 +220,143 @@ class SOWForm(forms.ModelForm):
 
 
 class QuestionnaireForm(forms.ModelForm):
+    # This is the dropdown for existing standardized names
+    name = forms.ModelChoiceField(
+        queryset=StandardizedQuestionnaire.objects.all(),
+        required=False,  # Will be made effectively required by clean() if new_name not provided
+        widget=forms.Select(attrs={'class': 'form-control select2-dropdown'}),
+        label="Standardized Questionnaire Name"
+    )
+    # New field to add a new standardized name
+    new_standardized_name = forms.CharField(
+        required=False,
+        label="Add new questionnaire name (if required)",
+        help_text="If the questionnaire name is not in the list above, type its full official name here. An abbreviation can be added via the admin panel later.",
+        widget=forms.TextInput(attrs={'placeholder': 'e.g., Profile of Mood States (POMS)'})
+    )
+    # New field for the abbreviation if adding a new standardized name
+    new_standardized_abbreviation = forms.CharField(
+        required=False,
+        label="Abbreviation for new name (optional)",
+        help_text="Enter a common abbreviation if adding a new questionnaire name.",
+        widget=forms.TextInput(attrs={'placeholder': 'e.g., POMS'})
+    )
+
     date_quoted = forms.DateField(
         widget=CustomDateInput(),
         input_formats=['%Y-%m-%d'],
         required=True
     )
-    
     proposal = forms.ModelChoiceField(
         queryset=Proposal.objects.all(),
         to_field_name="proposal_id",
-        required=False, # Make it optional as per model
+        required=False, 
         label="Proposal (Optional)",
         help_text="Select the proposal this quote is for. Type to search by Proposal ID.",
-        widget=forms.Select(attrs={'class': 'form-control select2-dropdown'}) # Using a generic class, you might need to initialize select2 JS
+        widget=forms.Select(attrs={'class': 'form-control select2-dropdown'})
     )
 
     class Meta:
         model = Questionnaire
         fields = [
-            'name',
+            'name', # This is the ForeignKey, will be populated by dropdown or new_standardized_name
+            # new_standardized_name and new_standardized_abbreviation are not model fields, handled in clean()
             'price',
             'date_quoted',
             'participants',
             'administrations_per_participant',
             'format',
             'proposal',
-            'comments'  # <-- ADDED 'comments'
+            'comments'
         ]
+        # Labels for model fields can be defined here if not already on the model or if you want to override
         labels = {
             'price': 'Price (CAD)',
             'administrations_per_participant': 'Administrations per Participant',
-            'name': 'Questionnaire Name',
-            'comments': 'Comments / Notes', # <-- Optional: Custom label
-
+            'comments': 'Comments / Notes',
         }
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'e.g., GSRS, POMS'}),
             'price': forms.NumberInput(attrs={'placeholder': '0.00'}),
             'participants': forms.NumberInput(attrs={'placeholder': 'e.g., 100'}),
             'administrations_per_participant': forms.NumberInput(attrs={'placeholder': 'e.g., 1'}),
             'format': forms.Select(attrs={'class': 'form-control'}),
-            'comments': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter any relevant comments here...'}), # <-- Optional: Use Textarea widget
+            'comments': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Enter any relevant comments here...'}),
         }
         help_texts = {
             'proposal': 'Leave blank if this is a general quote not tied to a specific proposal.'
         }
 
+    # To ensure new fields are ordered nicely with crispy-forms, you might need a Layout helper
+    # Or adjust their order in the `fields` list declaration above if not using Meta.fields
+    # For now, let's explicitly order them if needed by overriding the field order attribute
+    # (This is more for manual rendering or basic crispy rendering; Layout is better for complex crispy ordering)
+
     def __init__(self, *args, **kwargs):
         super(QuestionnaireForm, self).__init__(*args, **kwargs)
-        # Make proposal field not required by default if it's optional in model
-        if self.fields['proposal'].required:
-             self.fields['proposal'].required = False # Double ensure it's not required if blank=True, null=True
+        # Define field order if not using a crispy_forms.helper.Layout
+        # The order is name (dropdown), new_standardized_name, new_standardized_abbreviation, then the rest
+        field_order = [
+            'name', 'new_standardized_name', 'new_standardized_abbreviation', 
+            'price', 'date_quoted', 'participants', 'administrations_per_participant', 
+            'format', 'proposal', 'comments'
+        ]
+        # self.fields = {f: self.fields[f] for f in field_order if f in self.fields} # This reorders
+        # A simpler way for crispy is often to use a Layout helper. For now, let's assume crispy handles it or you'll adjust the template.
+        
+        if 'proposal' in self.fields and self.fields['proposal'].required:
+             self.fields['proposal'].required = False
+        
+        # For crispy forms, it's better to add non-model fields explicitly to the layout helper if you need precise control.
+        # Otherwise, crispy should pick them up if they are declared on the form class.
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name_dropdown = cleaned_data.get('name')
+        new_name_text = cleaned_data.get('new_standardized_name')
+        new_abbreviation_text = cleaned_data.get('new_standardized_abbreviation')
+
+        if new_name_text:
+            # User is trying to add a new standardized name
+            if name_dropdown:
+                # User selected from dropdown AND typed a new name - this is ambiguous
+                self.add_error('new_standardized_name', 
+                               "Please either select an existing name from the dropdown or enter a new name, but not both.")
+                self.add_error('name',
+                               "Please either select an existing name from the dropdown or enter a new name, but not both.")
+            else:
+                # Create or get the StandardizedQuestionnaire instance
+                standardized_questionnaire, created = StandardizedQuestionnaire.objects.get_or_create(
+                    name=new_name_text,
+                    defaults={'abbreviation': new_abbreviation_text or None} # Use abbreviation if provided
+                )
+                if not created and new_abbreviation_text and standardized_questionnaire.abbreviation != new_abbreviation_text:
+                    # Name exists, but user might be trying to set/change abbreviation via this form.
+                    # Decide on behavior: update abbreviation, ignore, or error.
+                    # For simplicity, let's assume if the name exists, we use it as-is.
+                    # Abbreviation management can be done via admin for existing names.
+                    pass 
+                cleaned_data['name'] = standardized_questionnaire # Set the FK field to this instance
+        elif not name_dropdown:
+            # No new name typed, and no existing name selected from dropdown
+            self.add_error('name', "This field is required. Please select a questionnaire name or add a new one below.")
+        
+        return cleaned_data
+
+
+# New Form for StandardizedQuestionnaire
+class StandardizedQuestionnaireForm(forms.ModelForm):
+    class Meta:
+        model = StandardizedQuestionnaire
+        fields = ['name', 'abbreviation'] # Add any other fields like 'description' if you added them to the model
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Full official name, e.g., Profile of Mood States (POMS)'}),
+            'abbreviation': forms.TextInput(attrs={'placeholder': 'Common abbreviation, e.g., POMS'}),
+            # 'description': forms.Textarea(attrs={'rows': 3}),
+        }
+        labels = {
+            'name': 'Standardized Full Name',
+            'abbreviation': 'Abbreviation (Optional)',
+        }
+        help_texts = {
+            'name': 'This name will be used in dropdowns. Ensure it is accurate and unique.',
+        }

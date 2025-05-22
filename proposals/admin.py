@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Proposal, SOW, Questionnaire
+from .models import Proposal, SOW, Questionnaire, StandardizedQuestionnaire
 
 # Inline admin for SOW – allows editing SOW records on a Proposal’s admin page.
 
@@ -25,11 +25,17 @@ class SOWAdmin(admin.ModelAdmin):
     list_filter = ('proposal',)
 
 
+class StandardizedQuestionnaireAdmin(admin.ModelAdmin):
+    list_display = ('name', 'abbreviation')
+    search_fields = ('name', 'abbreviation')
+
+
 class QuestionnaireInline(admin.TabularInline):
     model = Questionnaire
     extra = 0
     fields = ('name', 'price', 'date_quoted', 'participants', 'administrations_per_participant', 'format', 'comments', 'updated_at') # Add 'comments'
     readonly_fields = ('updated_at',)
+    autocomplete_fields = ['name'] # For ForeignKey to StandardizedQuestionnaire
     show_change_link = True
 
 
@@ -38,7 +44,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     search_fields = ('name', 'proposal__proposal_id', 'comments') # Add 'comments'
     list_filter = ('format', 'date_quoted', 'proposal')
     ordering = ('-date_quoted', 'name')
-    autocomplete_fields = ['proposal']
+    autocomplete_fields = ['proposal', 'name'] # Add 'name' here too
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         (None, {
@@ -52,6 +58,11 @@ class QuestionnaireAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
         }),
     )
+
+    @admin.display(description='Questionnaire Name', ordering='name__name')
+    def get_questionnaire_name(self, obj):
+        return obj.name.name if obj.name else None
+
     # ... (proposal_link method) ...
     def proposal_link(self, obj): # Keep this method if you have it
         if obj.proposal:
@@ -66,3 +77,4 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 admin.site.register(Proposal, ProposalAdmin)
 admin.site.register(SOW, SOWAdmin)
 admin.site.register(Questionnaire, QuestionnaireAdmin) # Register Questionnaire
+admin.site.register(StandardizedQuestionnaire, StandardizedQuestionnaireAdmin) # <-- REGISTER NEW MODEL

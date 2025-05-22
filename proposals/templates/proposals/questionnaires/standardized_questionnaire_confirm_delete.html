@@ -1,0 +1,26 @@
+{% extends 'proposals/base.html' %}
+
+{% block title %}Confirm Delete: {{ standardized_name.name }}{% endblock %}
+
+{% block content %}
+<h1>Confirm Delete: <span class="text-danger">{{ standardized_name.name }}</span></h1>
+<hr>
+{% if is_in_use %}
+    <div class="alert alert-danger">
+        <strong>Cannot Delete:</strong> This standardized name "{{ standardized_name.name }}" is currently used by one or more questionnaire quotes. 
+        You must update those quotes to use a different standardized name before this one can be deleted.
+    </div>
+    <a href="{% url 'standardized_questionnaire_list' %}" class="btn btn-secondary">Back to List</a>
+{% else %}
+    <p>Are you sure you want to delete the standardized questionnaire name "<strong>{{ standardized_name.name }}</strong>"?</p>
+    {% if standardized_name.abbreviation %}
+        <p>Abbreviation: <strong>{{ standardized_name.abbreviation }}</strong></p>
+    {% endif %}
+    <p class="text-danger">This action cannot be undone.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'standardized_questionnaire_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endif %}
+{% endblock %}

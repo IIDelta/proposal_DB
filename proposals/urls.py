@@ -10,7 +10,10 @@ from .views import (
     SOWDeleteView,
     ProposalDetailView,
     QuestionnaireListView, QuestionnaireDetailView, QuestionnaireCreateView,
-    QuestionnaireUpdateView, QuestionnaireDeleteView
+    QuestionnaireUpdateView, QuestionnaireDeleteView,
+    StandardizedQuestionnaireListView, StandardizedQuestionnaireCreateView,
+    StandardizedQuestionnaireUpdateView, StandardizedQuestionnaireDeleteView,
+    ajax_create_standardized_name
 )
 
 urlpatterns = [
@@ -38,4 +41,21 @@ urlpatterns = [
     path('questionnaires/<int:pk>/', QuestionnaireDetailView.as_view(), name='questionnaire_detail'),
     path('questionnaires/<int:pk>/update/', QuestionnaireUpdateView.as_view(), name='questionnaire_update'),
     path('questionnaires/<int:pk>/delete/', QuestionnaireDeleteView.as_view(), name='questionnaire_delete'),
+
+    # URLs for StandardizedQuestionnaire Management
+    path('questionnaires/manage-names/',
+         StandardizedQuestionnaireListView.as_view(),
+         name='standardized_questionnaire_list'),
+    path('questionnaires/manage-names/add/',
+         StandardizedQuestionnaireCreateView.as_view(),
+         name='standardized_questionnaire_create'),
+    path('questionnaires/manage-names/<int:pk>/edit/',
+         StandardizedQuestionnaireUpdateView.as_view(),
+         name='standardized_questionnaire_update'),
+    path('questionnaires/manage-names/<int:pk>/delete/',
+         StandardizedQuestionnaireDeleteView.as_view(),
+         name='standardized_questionnaire_delete'),
+    path('ajax/create-standardized-name/',
+         ajax_create_standardized_name,
+         name='ajax_create_standardized_name'),
 ]

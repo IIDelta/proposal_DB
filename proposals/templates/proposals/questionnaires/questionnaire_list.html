@@ -6,6 +6,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h1>Questionnaire Quotes</h1>
+  <a href="{% url 'standardized_questionnaire_list' %}" class="btn btn-info mr-2">Manage Standardized Names</a>
   <a href="{% url 'questionnaire_create' %}" class="btn btn-primary">Add New Quote</a>
 </div>
 
@@ -21,6 +22,7 @@
           <th>Participants</th>
           <th>Admin/Participant</th>
           <th>Format</th>
+          <th>Comments</th>
           <th>Last Updated</th>
           <th>Actions</th>
         </tr>
@@ -35,6 +37,7 @@
             <td class="text-right">{{ q.participants|intcomma }}</td>
             <td class="text-center">{{ q.administrations_per_participant }}</td>
             <td>{{ q.get_format_display }}</td>
+            <td>{{ q.comments|truncatewords:5|default:"-" }}</td>
             <td>{{ q.updated_at|timesince }} ago</td>
             <td>
               <a href="{% url 'questionnaire_update' q.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>

@@ -1,5 +1,5 @@
 {% extends 'proposals/base.html' %}
-{% load crispy_forms_tags %} {# Assuming you might use crispy-forms, optional #}
+{% load crispy_forms_tags %}
 
 {% block title %}{{ title|default:"Questionnaire Quote Form" }}{% endblock %}
 
@@ -7,30 +7,134 @@
 <h1>{{ title|default:"Questionnaire Quote Form" }}</h1>
 <hr>
 
-<form method="post" novalidate>
-  {% csrf_token %}
+<form method="post" novalidate id="questionnaireForm"> {# Added ID to the form #}
+    {% csrf_token %}
 
-  {% if form.non_field_errors %}
+    {% if form.non_field_errors %}
     <div class="alert alert-danger">
-      {% for error in form.non_field_errors %}
-        <p>{{ error }}</p>
-      {% endfor %}
+        {% for error in form.non_field_errors %}
+        <p class="mb-0">{{ error }}</p>
+        {% endfor %}
     </div>
-  {% endif %}
+    {% endif %}
 
-  {# If not using crispy-forms, loop through fields manually or use form.as_p, form.as_table #}
-  {{ form|crispy }} {# Or remove this and use the table structure below #}
+    {{ form.name|as_crispy_field }} 
 
-  <button type="submit" class="btn btn-success">Save Quote</button>
-  <a href="{% if object %}{% url 'questionnaire_detail' object.pk %}{% else %}{% url 'questionnaire_list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+    <div class="mb-3">
+        <button type="button" class="btn btn-outline-info btn-sm mb-2" id="toggleAddNewStdNameBtn">
+            Can't find the name in the list? Add a new one...
+        </button>
+        
+        <div id="addNewStdNameSection" style="display:none; border: 1px solid #e0e0e0; padding: 20px; margin-top: 10px; border-radius: 5px; background-color: #f9f9f9;">
+            <p class="text-muted small">Provide the full official name for the new questionnaire and an optional abbreviation.</p>
+            {{ form.new_standardized_name|as_crispy_field }}
+            {{ form.new_standardized_abbreviation|as_crispy_field }}
+            <button type="button" class="btn btn-success btn-sm mt-2" id="applyNewStdNameBtn">Apply This New Name</button> {# <-- NEW APPLY BUTTON #}
+            <span id="newNameStatus" class="ml-2"></span> {# For feedback messages #}
+        </div>
+    </div>
+
+    <hr> 
+
+    {{ form.price|as_crispy_field }}
+    {{ form.date_quoted|as_crispy_field }}
+    {{ form.participants|as_crispy_field }}
+    {{ form.administrations_per_participant|as_crispy_field }}
+    {{ form.format|as_crispy_field }}
+    {{ form.proposal|as_crispy_field }}
+    {{ form.comments|as_crispy_field }}
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">Save Quote</button>
+        <a href="{% if object %}{% url 'questionnaire_detail' object.pk %}{% else %}{% url 'questionnaire_list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
 </form>
 
-{% if proposal_list %}
-  <datalist id="proposalList">
-    {% for p in proposal_list %}
-      <option value="{{ p.proposal_id }}">{{ p.proposal_id }}</option>
-    {% endfor %}
-  </datalist>
-{% endif %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleAddNewStdNameBtn');
+    const addNewStdNameSection = document.getElementById('addNewStdNameSection');
+    const applyNewNameButton = document.getElementById('applyNewStdNameBtn');
+    const newNameInput = document.querySelector('[name="new_standardized_name"]'); // More specific selector
+    const newAbbrInput = document.querySelector('[name="new_standardized_abbreviation"]');
+    const mainNameDropdown = document.querySelector('[name="name"]'); // The main <select> for standardized names
+    const newNameStatus = document.getElementById('newNameStatus');
+    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
+    // Toggle visibility of the "add new" section
+    if (toggleButton && addNewStdNameSection) {
+        const newNameFieldHasError = newNameInput && newNameInput.classList.contains('is-invalid');
+        const newNameHasValue = newNameInput && newNameInput.value.trim() !== "";
+        
+        if (newNameFieldHasError || newNameHasValue) {
+            addNewStdNameSection.style.display = 'block';
+            toggleButton.textContent = 'Hide "Add New Name" Section';
+        }
+
+        toggleButton.addEventListener('click', function() {
+            const isHidden = addNewStdNameSection.style.display === 'none' || addNewStdNameSection.style.display === '';
+            addNewStdNameSection.style.display = isHidden ? 'block' : 'none';
+            toggleButton.textContent = isHidden ? 'Hide "Add New Name" Section' : 'Can\'t find the name in the list? Add a new one...';
+        });
+    }
+
+    // Handle "Apply New Name" button click
+    if (applyNewNameButton && newNameInput && newAbbrInput && mainNameDropdown && newNameStatus) {
+        applyNewNameButton.addEventListener('click', function() {
+            const nameValue = newNameInput.value.trim();
+            const abbrValue = newAbbrInput.value.trim();
+
+            if (!nameValue) {
+                newNameStatus.textContent = 'New name cannot be empty.';
+                newNameStatus.className = 'ml-2 text-danger';
+                newNameInput.focus();
+                return;
+            }
+
+            newNameStatus.textContent = 'Applying...';
+            newNameStatus.className = 'ml-2 text-info';
+
+            fetch("{% url 'ajax_create_standardized_name' %}", { // We will create this URL name
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    name: nameValue,
+                    abbreviation: abbrValue
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    newNameStatus.textContent = 'New name applied and selected!';
+                    newNameStatus.className = 'ml-2 text-success';
+
+                    // Add new option to dropdown and select it
+                    const newOption = new Option(data.name, data.id, true, true); // text, value, defaultSelected, selected
+                    mainNameDropdown.add(newOption);
+                    
+                    // If using Select2 or similar, you might need to trigger an update:
+                    // $(mainNameDropdown).trigger('change'); // Example for jQuery Select2
+
+                    newNameInput.value = ''; // Clear input
+                    newAbbrInput.value = ''; // Clear input
+                    addNewStdNameSection.style.display = 'none'; // Hide section
+                    toggleButton.textContent = 'Can\'t find the name in the list? Add a new one...';
+
+                } else {
+                    newNameStatus.textContent = data.error || 'Error applying new name.';
+                    newNameStatus.className = 'ml-2 text-danger';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                newNameStatus.textContent = 'Request failed. Check console.';
+                newNameStatus.className = 'ml-2 text-danger';
+            });
+        });
+    }
+});
+</script>
 {% endblock %}
