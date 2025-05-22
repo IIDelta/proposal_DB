@@ -1,0 +1,36 @@
+{% extends 'proposals/base.html' %}
+{% load crispy_forms_tags %} {# Assuming you might use crispy-forms, optional #}
+
+{% block title %}{{ title|default:"Questionnaire Quote Form" }}{% endblock %}
+
+{% block content %}
+<h1>{{ title|default:"Questionnaire Quote Form" }}</h1>
+<hr>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# If not using crispy-forms, loop through fields manually or use form.as_p, form.as_table #}
+  {{ form|crispy }} {# Or remove this and use the table structure below #}
+
+  <button type="submit" class="btn btn-success">Save Quote</button>
+  <a href="{% if object %}{% url 'questionnaire_detail' object.pk %}{% else %}{% url 'questionnaire_list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+
+{% if proposal_list %}
+  <datalist id="proposalList">
+    {% for p in proposal_list %}
+      <option value="{{ p.proposal_id }}">{{ p.proposal_id }}</option>
+    {% endfor %}
+  </datalist>
+{% endif %}
+
+{% endblock %}

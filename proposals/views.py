@@ -1,8 +1,8 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .models import Proposal, SOW
-from .forms import ProposalForm, SOWForm
+from .models import Proposal, SOW, Questionnaire
+from .forms import ProposalForm, SOWForm, QuestionnaireForm
 
 
 # Combined listing view: lists proposals and their associated SOWs.
@@ -103,3 +103,64 @@ class ProposalDetailView(DetailView):
     model = Proposal
     template_name = 'proposals/proposal_detail.html'
     context_object_name = 'proposal'  # Use 'proposal' in the template context
+
+
+# Questionnaire CRUD Views
+class QuestionnaireListView(ListView):
+    model = Questionnaire
+    template_name = 'proposals/questionnaires/questionnaire_list.html'
+    context_object_name = 'questionnaires'
+    paginate_by = 20 # Optional
+
+    def get_queryset(self):
+        # Order by date_quoted descending, then by name ascending
+        return Questionnaire.objects.select_related('proposal').all().order_by('-date_quoted', 'name')
+
+
+class QuestionnaireDetailView(DetailView):
+    model = Questionnaire
+    template_name = 'proposals/questionnaires/questionnaire_detail.html'
+    context_object_name = 'questionnaire'
+
+
+class QuestionnaireCreateView(CreateView):
+    model = Questionnaire
+    form_class = QuestionnaireForm
+    template_name = 'proposals/questionnaires/questionnaire_form.html'
+    success_url = reverse_lazy('questionnaire_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Add New Questionnaire Quote"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Questionnaire quote created successfully.")
+        return super().form_valid(form)
+
+
+class QuestionnaireUpdateView(UpdateView):
+    model = Questionnaire
+    form_class = QuestionnaireForm
+    template_name = 'proposals/questionnaires/questionnaire_form.html'
+    success_url = reverse_lazy('questionnaire_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f"Edit Quote: {self.object.name}"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Questionnaire quote updated successfully.")
+        return super().form_valid(form)
+
+
+class QuestionnaireDeleteView(DeleteView):
+    model = Questionnaire
+    template_name = 'proposals/questionnaires/questionnaire_confirm_delete.html'
+    success_url = reverse_lazy('questionnaire_list')
+    context_object_name = 'questionnaire'
+
+    def form_valid(self, form): # Use form_valid for success message consistency with DeleteView
+        messages.success(self.request, f"Questionnaire quote '{self.object.name}' deleted successfully.")
+        return super().form_valid(form)

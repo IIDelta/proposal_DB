@@ -1,0 +1,20 @@
+{% extends 'proposals/base.html' %}
+
+{% block title %}Confirm Delete Quote{% endblock %}
+
+{% block content %}
+<h1>Confirm Delete: {{ questionnaire.name }}</h1>
+<hr>
+<p>Are you sure you want to delete the questionnaire quote for "<strong>{{ questionnaire.name }}</strong>"?</p>
+<p>
+    <strong>Proposal:</strong> {{ questionnaire.proposal.proposal_id|default:"N/A" }}<br>
+    <strong>Price:</strong> ${{ questionnaire.price|floatformat:2 }}<br>
+    <strong>Date Quoted:</strong> {{ questionnaire.date_quoted|date:"Y-m-d" }}
+</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Yes, Delete This Quote</button>
+  <a href="{% url 'questionnaire_detail' questionnaire.pk %}" class="btn btn-outline-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -36,9 +36,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'django.contrib.staticfiles',
-    'proposals',
+    'crispy_forms',
+    'proposals.apps.ProposalsConfig',
+    'crispy_bootstrap4',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4" # Or "bootstrap5" if you upgrade Bootstrap
+CRISPY_TEMPLATE_PACK = "bootstrap4"         # Or "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

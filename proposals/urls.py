@@ -8,7 +8,9 @@ from .views import (
     SOWCreateView,
     SOWUpdateView,
     SOWDeleteView,
-    ProposalDetailView
+    ProposalDetailView,
+    QuestionnaireListView, QuestionnaireDetailView, QuestionnaireCreateView,
+    QuestionnaireUpdateView, QuestionnaireDeleteView
 )
 
 urlpatterns = [
@@ -27,4 +29,13 @@ urlpatterns = [
     path('sow/create/', SOWCreateView.as_view(), name='sow_create'),
     path('sow/<int:pk>/update/', SOWUpdateView.as_view(), name='sow_update'),
     path('sow/<int:pk>/delete/', SOWDeleteView.as_view(), name='sow_delete'),
+
+    # Questionnaire URLs - these will be prefixed by how 'proposals.urls' is included in your project's main urls.py
+    # To achieve proposals.local/questionnaires/, this file should be included at the root or with a prefix
+    # that allows this structure.
+    path('questionnaires/', QuestionnaireListView.as_view(), name='questionnaire_list'),
+    path('questionnaires/create/', QuestionnaireCreateView.as_view(), name='questionnaire_create'),
+    path('questionnaires/<int:pk>/', QuestionnaireDetailView.as_view(), name='questionnaire_detail'),
+    path('questionnaires/<int:pk>/update/', QuestionnaireUpdateView.as_view(), name='questionnaire_update'),
+    path('questionnaires/<int:pk>/delete/', QuestionnaireDeleteView.as_view(), name='questionnaire_delete'),
 ]

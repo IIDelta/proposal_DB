@@ -110,3 +110,33 @@ class SOW(SharedProposalData):
 
     def __str__(self):
         return self.sow_id
+
+
+class Questionnaire(models.Model):
+    FORMAT_CHOICES = [
+        ('Paper', 'Paper'),
+        ('Electronic', 'Electronic'),
+    ]
+    name = models.CharField(max_length=255, help_text="Name of the questionnaire (e.g., GSRS, POMS)")
+    price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Price quoted for questionnaire licensing (CAD)")
+    date_quoted = models.DateField()
+    participants = models.IntegerField(help_text="Number of participants the quote is for")
+    administrations_per_participant = models.IntegerField(help_text="Number of questionnaire administrations per participant")
+    format = models.CharField(max_length=10, choices=FORMAT_CHOICES, help_text="Format of the questionnaire")
+    proposal = models.ForeignKey(
+        Proposal,
+        on_delete=models.SET_NULL, # Or models.CASCADE if a questionnaire quote must always be tied to a proposal
+        null=True,
+        blank=True, # Allow not associating with a proposal initially or if it's a general quote
+        related_name='questionnaires',
+        help_text="Proposal ID this quote was for (optional)"
+    )
+    comments = models.TextField(blank=True, null=True, help_text="Any additional comments or notes for this questionnaire quote.") # <-- NEW FIELD
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - Quote for {self.proposal.proposal_id if self.proposal else 'N/A'}"
+
+    class Meta:
+        ordering = ['-date_quoted', 'name']

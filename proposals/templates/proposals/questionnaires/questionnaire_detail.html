@@ -1,0 +1,68 @@
+{% extends 'proposals/base.html' %}
+{% load humanize %}
+
+{% block title %}Quote: {{ questionnaire.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Quote: {{ questionnaire.name }}</h1>
+    <div>
+        <a href="{% url 'questionnaire_update' questionnaire.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'questionnaire_delete' questionnaire.pk %}" class="btn btn-danger ml-2">Delete</a>
+        <a href="{% url 'questionnaire_list' %}" class="btn btn-outline-secondary ml-2">Back to List</a>
+    </div>
+</div>
+<hr>
+
+<div class="card">
+  <div class="card-header">
+    <h5>Details for {{ questionnaire.name }}</h5>
+  </div>
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-4">Questionnaire Name:</dt>
+      <dd class="col-sm-8">{{ questionnaire.name }}</dd>
+
+      <dt class="col-sm-4">Associated Proposal:</dt>
+      <dd class="col-sm-8">
+        {% if questionnaire.proposal %}
+          <a href="{% url 'proposal_detail' questionnaire.proposal.pk %}">{{ questionnaire.proposal.proposal_id }}</a>
+        {% else %}
+          Not associated with a specific proposal.
+        {% endif %}
+      </dd>
+
+      <dt class="col-sm-4">Price Quoted (CAD):</dt>
+      <dd class="col-sm-8">${{ questionnaire.price|floatformat:2|intcomma }}</dd>
+
+      <dt class="col-sm-4">Date Quoted:</dt>
+      <dd class="col-sm-8">{{ questionnaire.date_quoted|date:"F j, Y" }}</dd>
+
+      <dt class="col-sm-4">Number of Participants:</dt>
+      <dd class="col-sm-8">{{ questionnaire.participants|intcomma }}</dd>
+
+      <dt class="col-sm-4">Administrations per Participant:</dt>
+      <dd class="col-sm-8">{{ questionnaire.administrations_per_participant }}</dd>
+
+      <dt class="col-sm-4">Format:</dt>
+      <dd class="col-sm-8">{{ questionnaire.get_format_display }}</dd>
+
+      <dt class="col-sm-4">Record Created:</dt>
+      <dd class="col-sm-8">{{ questionnaire.created_at|date:"F j, Y, P" }}</dd>
+
+      <dt class="col-sm-4">Last Updated:</dt>
+      <dd class="col-sm-8">{{ questionnaire.updated_at|date:"F j, Y, P" }} ({{ questionnaire.updated_at|timesince }} ago)</dd>
+      <dt class="col-sm-3">Comments:</dt>
+
+      <dd class="col-sm-9">
+        {% if questionnaire.comments %}
+            {{ questionnaire.comments|linebreaksbr }}
+        {% else %}
+            <span class="text-muted">No comments provided.</span>
+        {% endif %}
+    </dd>
+    </dl>
+  </div>
+</div>
+
+{% endblock %}

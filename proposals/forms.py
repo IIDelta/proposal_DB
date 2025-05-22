@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proposal, SOW, SharedProposalData
+from .models import Proposal, SOW, SharedProposalData, Questionnaire
 
 
 class CustomDateInput(forms.DateInput):
@@ -217,3 +217,57 @@ class SOWForm(forms.ModelForm):
             vendor_list = [v.strip() for v in data.split(',') if v.strip()]
             return vendor_list
         return [] # Return an empty list if input is empty/whitespace
+
+
+class QuestionnaireForm(forms.ModelForm):
+    date_quoted = forms.DateField(
+        widget=CustomDateInput(),
+        input_formats=['%Y-%m-%d'],
+        required=True
+    )
+    
+    proposal = forms.ModelChoiceField(
+        queryset=Proposal.objects.all(),
+        to_field_name="proposal_id",
+        required=False, # Make it optional as per model
+        label="Proposal (Optional)",
+        help_text="Select the proposal this quote is for. Type to search by Proposal ID.",
+        widget=forms.Select(attrs={'class': 'form-control select2-dropdown'}) # Using a generic class, you might need to initialize select2 JS
+    )
+
+    class Meta:
+        model = Questionnaire
+        fields = [
+            'name',
+            'price',
+            'date_quoted',
+            'participants',
+            'administrations_per_participant',
+            'format',
+            'proposal',
+            'comments'  # <-- ADDED 'comments'
+        ]
+        labels = {
+            'price': 'Price (CAD)',
+            'administrations_per_participant': 'Administrations per Participant',
+            'name': 'Questionnaire Name',
+            'comments': 'Comments / Notes', # <-- Optional: Custom label
+
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'e.g., GSRS, POMS'}),
+            'price': forms.NumberInput(attrs={'placeholder': '0.00'}),
+            'participants': forms.NumberInput(attrs={'placeholder': 'e.g., 100'}),
+            'administrations_per_participant': forms.NumberInput(attrs={'placeholder': 'e.g., 1'}),
+            'format': forms.Select(attrs={'class': 'form-control'}),
+            'comments': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter any relevant comments here...'}), # <-- Optional: Use Textarea widget
+        }
+        help_texts = {
+            'proposal': 'Leave blank if this is a general quote not tied to a specific proposal.'
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(QuestionnaireForm, self).__init__(*args, **kwargs)
+        # Make proposal field not required by default if it's optional in model
+        if self.fields['proposal'].required:
+             self.fields['proposal'].required = False # Double ensure it's not required if blank=True, null=True
